@@ -3,36 +3,41 @@ package com.loopers.domain.like;
 import com.loopers.domain.BaseEntity;
 import com.loopers.domain.user.User;
 import com.loopers.domain.product.Product;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
 @Entity
 @Table(
-    name = "like",
+    name = "likes",
     uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"})
 )
 public class Like extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public Like() {
-    }
+    protected Like() {}
 
-    public Like(User user, Product product) {
+    private Like(User user, Product product) {
         this.user = user;
         this.product = product;
     }
 
+    public static Like create(User user, Product product) {
+        if (user == null) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "사용자 정보는 필수입니다.");
+        }
+        if (product == null) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "상품 정보는 필수입니다.");
+        }
+        return new Like(user, product);
+    }
 }
-

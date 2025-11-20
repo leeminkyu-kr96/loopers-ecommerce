@@ -32,7 +32,8 @@ public class OrderFacade {
 
     @Transactional(readOnly = true)
     public List<OrderInfo> getUserOrders(UserId userId) {
-        User user = userService.getUser(userId);
+        User user = userService.getUser(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 요청입니다."));
         if (user == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
         }
@@ -43,8 +44,9 @@ public class OrderFacade {
     }
 
     @Transactional
-    public OrderInfo createOrder(UserId userId, List<OrderService.OrderItemRequest> items) {
-        User user = userService.getUser(userId);
+    public OrderInfo createOrder(UserId userId, List<OrderDto.CreateRequest> items) {
+        User user = userService.getUser(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 요청입니다."));
         if (user == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
         }

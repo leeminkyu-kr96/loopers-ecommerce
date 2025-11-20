@@ -5,46 +5,46 @@ import com.loopers.domain.common.Money;
 import com.loopers.domain.user.User;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Embedded;
+import jakarta.persistence.*;
 import lombok.Getter;
-
 
 @Getter
 @Entity
 @Table(name = "point")
 public class Point extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "user_model_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
+
     @Embedded
-    private Money point;
+    @AttributeOverride(name = "value", column = @Column(name = "balance"))
+    private Money balance;
 
-    public Point() {
-    }
+    protected Point() {}
 
-    public Point(User user, Money point) {
-
+    private Point(User user, Money balance) {
         this.user = user;
-        this.point = point;
+        this.balance = balance;
     }
 
-    public void charge(Money chargePoint) {
-        long newPointValue = this.point.value() + chargePoint.value();
-        this.point = new Money(newPointValue);
+    public static Point create(User user) {
+        return new Point(user, new Money(0));
     }
 
-    public void use(Money usePoint) {
-        if (this.point.value() < usePoint.value()) {
+    public void charge(Money amount) {
+        if (amount.value() <= 0) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "충전 금액은 0원보다 커야 합니다.");
+        }
+        long newBalance = this.balance.value() + amount.value();
+        this.balance = new Money(newBalance);
+    }
+
+    public void use(Money amount) {
+        if (this.balance.value() < amount.value()) {
             throw new CoreException(ErrorType.BAD_REQUEST, "포인트가 부족합니다.");
         }
-
-        long newPointValue = this.point.value() - usePoint.value();
-        this.point = new Money(newPointValue);
-
+        long newBalance = this.balance.value() - amount.value();
+        this.balance = new Money(newBalance);
     }
 }

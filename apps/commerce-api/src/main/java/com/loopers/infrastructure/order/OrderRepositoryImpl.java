@@ -27,6 +27,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<Order> findByUserId(User user) {
-        return orderJpaRepository.findByUserId(user.getId());
+        return orderJpaRepository.findByUser(user);
     }
 }

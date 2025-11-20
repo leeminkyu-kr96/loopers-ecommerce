@@ -1,15 +1,14 @@
 package com.loopers.domain.point;
 
+import com.loopers.domain.user.User;
+import com.loopers.domain.user.UserId;
 import com.loopers.domain.user.UserRepository;
 import com.loopers.domain.common.Money;
-import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Component;
-
-
-import com.loopers.domain.user.User;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -19,39 +18,32 @@ public class PointService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Point findPoint(Point point) {
-        User requestUser = point.getUser();
-        var foundUser = userRepository.findById(requestUser.getId());
-        if (foundUser.isEmpty()) {
-            return null;
-        }
-        return pointRepository.findPoint(foundUser.get()).orElse(null);
+    public Point getPoint(UserId userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
+        
+        return pointRepository.findByUser(user)
+                .orElse(Point.create(user));
     }
   
     @Transactional
-    public void charge(Point point) {
-        User user = point.getUser();
-        var foundUser = userRepository.findById(user.getId())
-            .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저가 존재하지 않습니다."));
+    public Point charge(UserId userId, Money amount) {
+        User user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
   
-        var existing = pointRepository.findPoint(foundUser);
-        if (existing.isPresent()) {
-            existing.get().charge(point.getPoint());
-            pointRepository.save(existing.get());
-            return;
-        }
-        pointRepository.save(new Point(foundUser, point.getPoint()));
+        Point point = pointRepository.findByUser(user)
+                .orElseGet(() -> pointRepository.save(Point.create(user)));
+
+        point.charge(amount);
+        
+        return point;
     }
 
     @Transactional
-    public void use(User user, Money usePoint) {
-        var foundUser = userRepository.findById(user.getId())
-            .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저가 존재하지 않습니다."));
+    public void use(User user, Money amount) {
+        Point point = pointRepository.findByUser(user)
+            .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, "포인트 계좌가 존재하지 않습니다."));
         
-        var existing = pointRepository.findPoint(foundUser)
-            .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "포인트 정보가 없습니다."));
-        
-        existing.use(usePoint);
-        pointRepository.save(existing);
+        point.use(amount);
     }
 }

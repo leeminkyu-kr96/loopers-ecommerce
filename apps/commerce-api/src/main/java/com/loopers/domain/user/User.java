@@ -1,14 +1,14 @@
+// apps/commerce-api/src/main/java/com/loopers/domain/user/User.java
+
 package com.loopers.domain.user;
 
 import com.loopers.domain.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Embedded;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User extends BaseEntity {
 
     @Embedded
@@ -17,7 +17,8 @@ public class User extends BaseEntity {
     @Embedded
     private Email email;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
 
     @Embedded
@@ -32,5 +33,4 @@ public class User extends BaseEntity {
         this.gender = gender;
         this.birthDate = birthDate;
     }
-
 }

@@ -51,4 +51,8 @@ public class Product extends BaseEntity {
 
     }
 
+    public void setLikeCount(long likeCount) {
+        this.totalLikeCount = likeCount;
+    }
+
 }

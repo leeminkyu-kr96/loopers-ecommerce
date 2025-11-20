@@ -5,9 +5,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-
+import java.util.List;
+import java.util.HashSet;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.loopers.domain.like.LikeRepository;
 import com.loopers.domain.common.Quantity;
@@ -24,44 +27,47 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Page<Product> getProducts(Pageable pageable, String sort, String brandName) {
-        if (sort.isBlank()) {
-            sort = "lastes";
+        // 기본 정렬값 설정
+        if (sort == null || sort.isBlank()) {
+            sort = "latest";
         }
 
+        // 기본 페이지 크기 20개 설정
+        int pageSize = pageable.getPageSize();
+        if (pageSize <= 0) {
+            pageSize = 20;
+        }
+
+        // sort 문자열을 Sort 객체로 변환
+        Sort sortObj = convertToSort(sort);
+        Pageable adjustedPageable = PageRequest.of(pageable.getPageNumber(), pageSize, sortObj);
+
+        // 브랜드명이 있으면 브랜드별 조회, 없으면 전체 조회
         Page<Product> productPage;
-        if (brandName != null && !brandName.isBlank()) {
-            productPage = productRepository.findByBrandName(brandName, pageable, sort);
+        if (brandName == null || brandName.isBlank()) {
+            productPage = productRepository.findAll(adjustedPageable);
         } else {
-            productPage = productRepository.findAll(pageable, sort);
+            productPage = productRepository.findByBrandName(brandName, adjustedPageable);
         }
 
-        return null;
+        return productPage;
     }
 
-//        List<ProductModel> products = productPage.getContent();
-//        Map<Long, Long> likeCounts = likeRepository
-//                .countByProductIdsLiked(products.stream().map(ProductModel::getId).collect(Collectors.toSet()));
-//        products.forEach(product -> product.setLikeCount(likeCounts.getOrDefault(product.getId(), 0L)));
-//
-//        // likes_desc 정렬은 메모리에서 처리
-//        if ("likes_desc".equals(sort)) {
-//            products.sort((a, b) -> Long.compare(
-//                    b.getLikeCount() != null ? b.getLikeCount() : 0L,
-//                    a.getLikeCount() != null ? a.getLikeCount() : 0L));
-//
-//            // 정렬된 리스트로 새로운 Page 객체 생성하여 반환
-//            return new PageImpl<>(products, pageable, productPage.getTotalElements());
-//        }
-//
-//        return productPage;
-
+    private Sort convertToSort(String sort) {
+        if ("price_asc".equals(sort)) {
+            return Sort.by(Sort.Direction.ASC, "price.value");
+        } else if ("likes_desc".equals(sort)) {
+            return Sort.by(Sort.Direction.DESC, "totalLikeCount");
+        } else {
+            return Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+    }
 
     @Transactional(readOnly = true)
     public Product getProduct(Long id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product != null) {
-            product.setLikeCount(likeRepository.countByProductLiked(product));
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품이 존재하지 않습니다."));
+        product.setLikeCount(likeRepository.countByProductLiked(product));
         return product;
     }
 
@@ -78,5 +84,10 @@ public class ProductService {
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품이 존재하지 않습니다."));
 
         product.decreaseQuantity(quantityToDecrease);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> findAllById(List<Long> ids) {
+        return productRepository.findAllById(new HashSet<>(ids));
     }
 }

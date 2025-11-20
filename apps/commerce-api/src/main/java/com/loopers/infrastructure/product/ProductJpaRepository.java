@@ -1,4 +1,3 @@
-// ProductJpaRepository.java (수정)
 package com.loopers.infrastructure.product;
 
 import com.loopers.domain.product.Product;
@@ -10,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductJpaRepository extends JpaRepository<Product, Long> {
     
-    @Query("SELECT p FROM ProductModel p WHERE p.brand.name = :brandName ORDER BY p.likeCount DESC")
-    Page<Product> findByBrandName(@Param("brandName") String brandName, Pageable pageable);
+    @Query("SELECT p FROM Product p WHERE p.deletedAt IS NULL")
+    Page<Product> findAllByDeletedAtIsNull(Pageable pageable);
+    
+    @Query("SELECT p FROM Product p WHERE p.brand.name = :brandName AND p.deletedAt IS NULL")
+    Page<Product> findByBrandNameAndDeletedAtIsNull(@Param("brandName") String brandName, Pageable pageable);
 }

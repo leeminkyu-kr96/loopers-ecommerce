@@ -14,10 +14,10 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-     @Transactional(readOnly = true)
-     public User getUser(UserId userId) {
-         return userRepository.findByUserId(userId).orElse(null);
-     }
+    @Transactional(readOnly = true)
+    public Optional<User> getUser(UserId userId) {
+        return userRepository.findByUserId(userId);
+    }
 
     @Transactional
     public User signUp(User userModel) {
