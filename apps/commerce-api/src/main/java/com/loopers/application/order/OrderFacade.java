@@ -1,8 +1,8 @@
 package com.loopers.application.order;
 
-import com.loopers.domain.order.OrderModel;
+import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
 import com.loopers.domain.user.UserId;
 import com.loopers.support.error.CoreException;
@@ -23,7 +23,7 @@ public class OrderFacade {
 
     @Transactional(readOnly = true)
     public OrderInfo getOrder(Long id) {
-        OrderModel order = orderService.getOrder(id);
+        Order order = orderService.getOrder(id);
         if (order == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "주문을 찾을 수 없습니다.");
         }
@@ -32,11 +32,11 @@ public class OrderFacade {
 
     @Transactional(readOnly = true)
     public List<OrderInfo> getUserOrders(UserId userId) {
-        UserModel user = userService.getUser(userId);
+        User user = userService.getUser(userId);
         if (user == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
         }
-        List<OrderModel> orders = orderService.getUserOrders(user);
+        List<Order> orders = orderService.getUserOrders(user);
         return orders.stream()
             .map(OrderInfo::from)
             .collect(Collectors.toList());
@@ -44,12 +44,12 @@ public class OrderFacade {
 
     @Transactional
     public OrderInfo createOrder(UserId userId, List<OrderService.OrderItemRequest> items) {
-        UserModel user = userService.getUser(userId);
+        User user = userService.getUser(userId);
         if (user == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
         }
         
-        OrderModel order = orderService.createOrder(user, items);
+        Order order = orderService.createOrder(user, items);
         return OrderInfo.from(order);
     }
 }

@@ -1,6 +1,6 @@
 package com.loopers.infrastructure.user;
 
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserRepository;
 import com.loopers.domain.user.UserId;
 import lombok.RequiredArgsConstructor;
@@ -14,17 +14,17 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override   
-    public Optional<UserModel> find(UserId userId) {
+    public Optional<User> findByUserId(UserId userId) {
          return userJpaRepository.findByUserId(userId);
      }
 
     @Override
-    public Optional<UserModel> findById(Long id) {
+    public Optional<User> findById(Long id) {
         return userJpaRepository.findById(id);
     }
 
     @Override
-    public UserModel save(UserModel userModel) {
-        return userJpaRepository.save(userModel);
+    public User save(User user) {
+        return userJpaRepository.save(user);
     }
 }

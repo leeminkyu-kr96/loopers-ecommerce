@@ -1,11 +1,7 @@
 package com.loopers.interfaces.api;
 
-import com.loopers.domain.user.Email;
-import com.loopers.domain.user.UserId;
-import com.loopers.domain.user.BirthDate;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.user.UserRepository;
-import com.loopers.domain.user.Gender;
+import com.loopers.domain.user.*;
+import com.loopers.domain.user.User;
 import com.loopers.interfaces.api.user.UserV1Dto;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
@@ -123,10 +119,10 @@ class UserV1ApiE2ETest {
         @Test
         void returnsUserInfo_whenValidUserIdIsProvided() {
             // arrange
-            UserModel userModel = userRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userRepository.save(
+                new User(new UserId("user123"), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            String requestUrl = ENDPOINT_GET.apply(userModel.getUserId().userId());
+            String requestUrl = ENDPOINT_GET.apply(user.getUserId().userId());
 
             // act
             ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -137,9 +133,9 @@ class UserV1ApiE2ETest {
             assertAll(
                 () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
                 () -> assertThat(response.getBody()).isNotNull(),
-                () -> assertThat(response.getBody().data().userId()).isEqualTo(userModel.getUserId().userId()),
-                () -> assertThat(response.getBody().data().email()).isEqualTo(userModel.getEmail().email()),
-                () -> assertThat(response.getBody().data().birthDate()).isEqualTo(userModel.getBirthDate().birthDate())
+                () -> assertThat(response.getBody().data().userId()).isEqualTo(user.getUserId().userId()),
+                () -> assertThat(response.getBody().data().email()).isEqualTo(user.getEmail().email()),
+                () -> assertThat(response.getBody().data().birthDate()).isEqualTo(user.getBirthDate().birthDate())
             );
         }
 

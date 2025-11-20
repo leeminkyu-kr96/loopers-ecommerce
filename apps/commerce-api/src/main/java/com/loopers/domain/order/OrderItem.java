@@ -1,7 +1,7 @@
 package com.loopers.domain.order;
 
 import com.loopers.domain.BaseEntity;
-import com.loopers.domain.product.ProductModel;
+import com.loopers.domain.product.Product;
 import com.loopers.domain.common.Quantity;
 import com.loopers.domain.common.Money;
 
@@ -12,18 +12,20 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "orderitems")
-public class OrderItemModel extends BaseEntity {
+public class OrderItem extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private OrderModel order;
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private ProductModel product;
+    private Product product;
 
     @Embedded
     private Quantity quantity;
@@ -32,32 +34,16 @@ public class OrderItemModel extends BaseEntity {
     @AttributeOverride(name = "value", column = @Column(name = "order_price"))
     private Money orderPrice;
 
-    protected OrderItemModel() {
+    protected OrderItem() {
     }
 
-    public OrderItemModel(ProductModel product, Quantity quantity, Money orderPrice) {
+    public OrderItem(Product product, Quantity quantity, Money orderPrice) {
         this.product = product;
         this.quantity = quantity;
         this.orderPrice = orderPrice;
     }
 
-    public OrderModel getOrder() {
-        return order;
-    }
-
-    public ProductModel getProduct() {
-        return product;
-    }
-
-    public Quantity getQuantity() {
-        return quantity;
-    }
-
-    public Money getOrderPrice() {
-        return orderPrice;
-    }
-
-    protected void setOrder(OrderModel order) {
+    protected void setOrder(Order order) {
         this.order = order;
     }
 }

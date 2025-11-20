@@ -1,7 +1,6 @@
 package com.loopers.domain.order;
 
-import com.loopers.domain.product.ProductModel;
-import com.loopers.domain.product.Brand;
+import com.loopers.domain.product.Product;
 import com.loopers.domain.common.Money;
 import com.loopers.domain.common.Quantity;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class OrderItemModelTest {
+class OrderItemTest {
     @DisplayName("주문 항목 모델 생성")
     @Nested
     class Create {
@@ -20,12 +19,12 @@ class OrderItemModelTest {
         @Test
         void createsOrderItem_whenValidParameters() {
             // arrange
-            ProductModel product = new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
             Quantity quantity = new Quantity(3);
             Money orderPrice = new Money(30000);
 
             // act
-            OrderItemModel orderItem = new OrderItemModel(product, quantity, orderPrice);
+            OrderItem orderItem = new OrderItem(product, quantity, orderPrice);
 
             // assert
             assertAll(
@@ -40,12 +39,12 @@ class OrderItemModelTest {
         @Test
         void createsOrderItem_withCorrectPriceCalculation() {
             // arrange
-            ProductModel product = new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
             Quantity quantity = new Quantity(2);
             Money expectedOrderPrice = new Money(20000); // 10000 * 2
 
             // act
-            OrderItemModel orderItem = new OrderItemModel(product, quantity, expectedOrderPrice);
+            OrderItem orderItem = new OrderItem(product, quantity, expectedOrderPrice);
 
             // assert
             assertThat(orderItem.getOrderPrice().value()).isEqualTo(expectedOrderPrice.value());

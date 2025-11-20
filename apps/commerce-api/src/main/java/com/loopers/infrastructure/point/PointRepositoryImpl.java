@@ -1,8 +1,8 @@
 package com.loopers.infrastructure.point;
 
-import com.loopers.domain.point.PointModel;
+import com.loopers.domain.point.Point;
 import com.loopers.domain.point.PointRepository;
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +14,12 @@ public class PointRepositoryImpl implements PointRepository {
     private final PointJpaRepository pointJpaRepository;
 
     @Override
-    public Optional<PointModel> findPoint(UserModel user) {
+    public Optional<Point> findPoint(User user) {
         return pointJpaRepository.findByUser(user);
     }
 
     @Override
-    public PointModel save(PointModel pointModel) {
-        return pointJpaRepository.save(pointModel);
+    public Point save(Point point) {
+        return pointJpaRepository.save(point);
     }
 }

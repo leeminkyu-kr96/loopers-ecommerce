@@ -1,15 +1,10 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.Email;
-import com.loopers.domain.user.UserId;
-import com.loopers.domain.user.BirthDate;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.user.UserRepository;
-import com.loopers.domain.user.Gender;
+import com.loopers.domain.user.*;
+import com.loopers.domain.user.User;
 import com.loopers.domain.common.Money;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,13 +47,13 @@ class PointServiceIntegrationTest {
         @Test
         void returnsPoint_whenValidUserIdIsProvided() {
             // arrange
-            UserModel user = new UserModel(new UserId("userId"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("userId"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
             userRepository.save(user);
-            PointModel pointModel = new PointModel(user, new Money(10));
-            pointService.charge(pointModel);
+            Point point = new Point(user, new Money(10));
+            pointService.charge(point);
 
             // act
-            PointModel result = pointService.findPoint(pointModel);
+            Point result = pointService.findPoint(point);
 
             // assert
             assertAll(
@@ -71,11 +66,11 @@ class PointServiceIntegrationTest {
         @Test
         void returnsNull_whenInvalidUserIdIsProvided() {
             // arrange
-            UserModel user = new UserModel(new UserId("notUserId1"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
-            PointModel pointModel = new PointModel(user, new Money(10));
+            User user = new User(new UserId("notUserId1"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            Point point = new Point(user, new Money(10));
 
             // act
-            PointModel result = pointService.findPoint(pointModel);
+            Point result = pointService.findPoint(point);
 
             // assert
             assertAll(
@@ -92,11 +87,11 @@ class PointServiceIntegrationTest {
         @Test
         void throwsException_whenInvalidUserIdIsProvided() {
             // arrange
-            UserModel user = new UserModel(new UserId("notUserId1"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
-            PointModel pointModel = new PointModel(user, new Money(10));
+            User user = new User(new UserId("notUserId1"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            Point point = new Point(user, new Money(10));
 
             // assert
-            assertThrows(CoreException.class, () -> pointService.charge(pointModel));
+            assertThrows(CoreException.class, () -> pointService.charge(point));
         }
 
     }

@@ -15,13 +15,13 @@ public class UserService {
     private final UserRepository userRepository;
 
      @Transactional(readOnly = true)
-     public UserModel getUser(UserId userId) {
-         return userRepository.find(userId).orElse(null);
+     public User getUser(UserId userId) {
+         return userRepository.findByUserId(userId).orElse(null);
      }
 
     @Transactional
-    public UserModel signUp(UserModel userModel) {
-        Optional<UserModel> user = userRepository.find(userModel.getUserId());
+    public User signUp(User userModel) {
+        Optional<User> user = userRepository.findByUserId(userModel.getUserId());
 
         if (user.isPresent()) {
             throw new CoreException(ErrorType.CONFLICT, "[userId = " + userModel.getUserId().userId() + "] 아이디가 중복되었습니다.");

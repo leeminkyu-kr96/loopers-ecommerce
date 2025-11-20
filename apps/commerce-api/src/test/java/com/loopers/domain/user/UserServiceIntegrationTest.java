@@ -56,14 +56,14 @@ class UserServiceIntegrationTest {
         @Test
         void returnsUserInfo_whenSignUp() {
             // arrange
-            UserModel userModel = new UserModel(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User userModel = new User(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
 
             // act
-            UserModel user = userService.signUp(userModel);
+            User user = userService.signUp(userModel);
 
             // assert
 
-            verify(userRepositoryImpl, times(1)).save(any(UserModel.class));
+            verify(userRepositoryImpl, times(1)).save(any(User.class));
 
             assertAll(
                     () -> assertThat(user).isNotNull(),
@@ -78,13 +78,13 @@ class UserServiceIntegrationTest {
         @Test
         void throwsException_whenUserIdIsDuplicated() {
             // arrange
-            UserModel userModel = new UserModel(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
-            userService.signUp(userModel);
+            User user = new User(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            userService.signUp(user);
 
-            UserModel dupUserModel = new UserModel(new UserId("userId1"), new Email("user1234@user.com"), new Gender("male"), new BirthDate("1999-01-11"));
+            User dupUser = new User(new UserId("userId1"), new Email("user1234@user.com"), new Gender("male"), new BirthDate("1999-01-11"));
 
             // act
-            CoreException exception = assertThrows(CoreException.class, () -> userService.signUp(dupUserModel));
+            CoreException exception = assertThrows(CoreException.class, () -> userService.signUp(dupUser));
 
             // assert
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
@@ -98,18 +98,18 @@ class UserServiceIntegrationTest {
         @Test
         void returnsUserInfo_whenValidIdIsProvided() {
             // arrange
-            UserModel userModel = new UserModel(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
-            userService.signUp(userModel);
+            User user = new User(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            userService.signUp(user);
 
             // act
-            UserModel result = userService.getUser(userModel.getUserId());
+            User result = userService.getUser(user.getUserId());
 
             // assert
             assertAll(
                     () -> assertThat(result).isNotNull(),
-                    () -> assertThat(result.getUserId()).isEqualTo(userModel.getUserId()),
-                    () -> assertThat(result.getEmail()).isEqualTo(userModel.getEmail()),
-                    () -> assertThat(result.getBirthDate()).isEqualTo(userModel.getBirthDate())
+                    () -> assertThat(result.getUserId()).isEqualTo(user.getUserId()),
+                    () -> assertThat(result.getEmail()).isEqualTo(user.getEmail()),
+                    () -> assertThat(result.getBirthDate()).isEqualTo(user.getBirthDate())
             );
         }
 
@@ -117,10 +117,10 @@ class UserServiceIntegrationTest {
         @Test
         void returnsNull_whenInvalidUserIdIsProvided() {
             // arrange
-            UserModel userModel = new UserModel(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("userId1"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
 
             // act
-            UserModel result = userService.getUser(userModel.getUserId());
+            User result = userService.getUser(user.getUserId());
 
             // assert
             assertThat(result).isNull();

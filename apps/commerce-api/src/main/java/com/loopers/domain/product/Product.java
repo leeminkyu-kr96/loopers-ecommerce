@@ -3,32 +3,35 @@ package com.loopers.domain.product;
 import com.loopers.domain.BaseEntity;
 import com.loopers.domain.common.Quantity;
 import com.loopers.domain.common.Money;
+import com.loopers.domain.brand.Brand;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "product")
-public class ProductModel extends BaseEntity {
+public class Product extends BaseEntity {
 
     private String name;
+
     @Embedded
-    @AttributeOverride(name = "name", column = @Column(name = "brand_name"))
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
+
     @Embedded
     private Money price;
+
     @Embedded
     private Quantity quantity;
-    private Long likeCount;
 
-    public ProductModel() {
+    private Long totalLikeCount;
+
+    public Product() {
     }
 
-    public ProductModel(String name, Brand brand, Money price, Quantity quantity) {
+    public Product(String name, Brand brand, Money price, Quantity quantity, Long totalLikeCount) {
         if (name == null || name.isBlank()) {
             throw new CoreException(ErrorType.BAD_REQUEST, "상품 이름은 비어있을 수 없습니다.");
         }
@@ -36,31 +39,7 @@ public class ProductModel extends BaseEntity {
         this.brand = brand;
         this.price = price;
         this.quantity = quantity;
-        this.likeCount = 0L;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Brand getBrand() {
-        return brand;
-    }
-
-    public Money getPrice() {
-        return price;
-    }
-
-    public Quantity getQuantity() {
-        return quantity;
-    }
-
-    public Long getLikeCount() {
-        return likeCount;
-    }
-
-    public void setLikeCount(Long likeCount) {
-        this.likeCount = likeCount;
+        this.totalLikeCount = totalLikeCount;
     }
 
     public void decreaseQuantity(Quantity quantityToDecrease) {

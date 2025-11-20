@@ -1,12 +1,8 @@
 package com.loopers.domain.order;
 
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.user.UserId;
-import com.loopers.domain.user.Email;
-import com.loopers.domain.user.Gender;
-import com.loopers.domain.user.BirthDate;
-import com.loopers.domain.product.ProductModel;
-import com.loopers.domain.product.Brand;
+import com.loopers.domain.user.*;
+import com.loopers.domain.user.User;
+import com.loopers.domain.product.Product;
 import com.loopers.domain.common.Money;
 import com.loopers.domain.common.Quantity;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class OrderModelTest {
+class OrderTest {
     @DisplayName("주문 모델 생성")
     @Nested
     class Create {
@@ -27,14 +23,14 @@ class OrderModelTest {
         @Test
         void createsOrder_whenValidParameters() {
             // arrange
-            UserModel user = new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
             Money totalPrice = new Money(30000);
-            ProductModel product = new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
-            OrderItemModel orderItem = new OrderItemModel(product, new Quantity(3), new Money(30000));
-            List<OrderItemModel> orderItems = List.of(orderItem);
+            Product product = new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
+            OrderItem orderItem = new OrderItem(product, new Quantity(3), new Money(30000));
+            List<OrderItem> orderItems = List.of(orderItem);
 
             // act
-            OrderModel order = new OrderModel(user, totalPrice, orderItems);
+            Order order = new Order(user, totalPrice, orderItems);
 
             // assert
             assertAll(
@@ -50,16 +46,16 @@ class OrderModelTest {
         @Test
         void createsOrder_whenMultipleOrderItems() {
             // arrange
-            UserModel user = new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
             Money totalPrice = new Money(50000);
-            ProductModel product1 = new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
-            ProductModel product2 = new ProductModel("product2", new Brand("Samsung"), new Money(20000), new Quantity(5));
-            OrderItemModel orderItem1 = new OrderItemModel(product1, new Quantity(2), new Money(20000));
-            OrderItemModel orderItem2 = new OrderItemModel(product2, new Quantity(1), new Money(20000));
-            List<OrderItemModel> orderItems = List.of(orderItem1, orderItem2);
+            Product product1 = new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product2 = new Product("product2", new Brand("Samsung"), new Money(20000), new Quantity(5));
+            OrderItem orderItem1 = new OrderItem(product1, new Quantity(2), new Money(20000));
+            OrderItem orderItem2 = new OrderItem(product2, new Quantity(1), new Money(20000));
+            List<OrderItem> orderItems = List.of(orderItem1, orderItem2);
 
             // act
-            OrderModel order = new OrderModel(user, totalPrice, orderItems);
+            Order order = new Order(user, totalPrice, orderItems);
 
             // assert
             assertAll(
@@ -81,11 +77,11 @@ class OrderModelTest {
         @Test
         void addsOrderItem_whenValidOrderItem() {
             // arrange
-            UserModel user = new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
             Money totalPrice = new Money(10000);
-            OrderModel order = new OrderModel(user, totalPrice, new java.util.ArrayList<>());
-            ProductModel product = new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
-            OrderItemModel orderItem = new OrderItemModel(product, new Quantity(1), new Money(10000));
+            Order order = new Order(user, totalPrice, new java.util.ArrayList<>());
+            Product product = new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
+            OrderItem orderItem = new OrderItem(product, new Quantity(1), new Money(10000));
 
             // act
             order.addOrderItem(orderItem);
@@ -102,13 +98,13 @@ class OrderModelTest {
         @Test
         void addsMultipleOrderItems_whenCalledMultipleTimes() {
             // arrange
-            UserModel user = new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"));
             Money totalPrice = new Money(30000);
-            OrderModel order = new OrderModel(user, totalPrice, new java.util.ArrayList<>());
-            ProductModel product1 = new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
-            ProductModel product2 = new ProductModel("product2", new Brand("Samsung"), new Money(20000), new Quantity(5));
-            OrderItemModel orderItem1 = new OrderItemModel(product1, new Quantity(1), new Money(10000));
-            OrderItemModel orderItem2 = new OrderItemModel(product2, new Quantity(1), new Money(20000));
+            Order order = new Order(user, totalPrice, new java.util.ArrayList<>());
+            Product product1 = new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product2 = new Product("product2", new Brand("Samsung"), new Money(20000), new Quantity(5));
+            OrderItem orderItem1 = new OrderItem(product1, new Quantity(1), new Money(10000));
+            OrderItem orderItem2 = new OrderItem(product2, new Quantity(1), new Money(20000));
 
             // act
             order.addOrderItem(orderItem1);

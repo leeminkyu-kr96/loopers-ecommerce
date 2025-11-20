@@ -1,13 +1,9 @@
 package com.loopers.interfaces.api;
 
-import com.loopers.domain.point.PointModel;
+import com.loopers.domain.point.Point;
 import com.loopers.domain.point.PointRepository;
-import com.loopers.domain.user.Email;
-import com.loopers.domain.user.UserId;
-import com.loopers.domain.user.BirthDate;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.user.UserRepository;
-import com.loopers.domain.user.Gender;
+import com.loopers.domain.user.*;
+import com.loopers.domain.user.User;
 import com.loopers.interfaces.api.point.PointV1Dto;
 import com.loopers.domain.common.Money;
 import com.loopers.utils.DatabaseCleanUp;
@@ -71,10 +67,10 @@ class PointV1ApiE2ETest {
         @Test
         void returnsPoint_whenValidUserIdHeaderIsProvided() {
             // arrange
-            UserModel user = userRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userRepository.save(
+                new User(new UserId("user123"), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            pointRepository.save(new PointModel(user, new Money(500)));
+            pointRepository.save(new Point(user, new Money(500)));
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-USER-ID", user.getUserId().userId());
@@ -120,8 +116,8 @@ class PointV1ApiE2ETest {
         @Test
         void chargesPoint_when1000AmountIsProvided() {
             // arrange
-            UserModel user = userRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userRepository.save(
+                new User(new UserId("user123"), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
             PointV1Dto.ChargeRequest request = new PointV1Dto.ChargeRequest(new Money(1000));
 

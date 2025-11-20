@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class UserModelTest {
+class UserTest {
     @DisplayName("회원가입 시 User 객체를 생성할 때, ")
     @Nested
     class Create {
@@ -30,7 +30,7 @@ class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new UserModel(new UserId(userId), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"));
+                new User(new UserId(userId), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"));
             });
 
             // assert
@@ -46,7 +46,7 @@ class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new UserModel(new UserId(userId), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"));
+                new User(new UserId(userId), new Email("user123@example.com"), new Gender("male"), new BirthDate("1999-01-01"));
             });
 
             //assert
@@ -62,7 +62,7 @@ class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new UserModel(new UserId("userId"), new Email(email), new Gender("male"), new BirthDate("1999-01-01"));
+                new User(new UserId("userId"), new Email(email), new Gender("male"), new BirthDate("1999-01-01"));
             });
 
             // assert
@@ -77,7 +77,7 @@ class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new UserModel(new UserId("user123"), new Email(email), new Gender("male"), new BirthDate("1999-01-01"));
+                new User(new UserId("user123"), new Email(email), new Gender("male"), new BirthDate("1999-01-01"));
             });
 
             //assert
@@ -93,7 +93,7 @@ class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate(birthDate));
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate(birthDate));
             });
 
             //assert
@@ -110,7 +110,7 @@ class UserModelTest {
             String birthDate = null;
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new UserModel(new UserId("userId"), new Email("user123@example.com"), new Gender("male"), new BirthDate(birthDate));
+                new User(new UserId("userId"), new Email("user123@example.com"), new Gender("male"), new BirthDate(birthDate));
             });
 
             // assert

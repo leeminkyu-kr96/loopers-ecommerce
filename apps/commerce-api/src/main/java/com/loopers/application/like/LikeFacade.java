@@ -1,13 +1,13 @@
 package com.loopers.application.like;
 
+import com.loopers.domain.product.Product;
+import com.loopers.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.loopers.domain.like.LikeService;
 import com.loopers.domain.user.UserService;
 import com.loopers.domain.product.ProductService;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.product.ProductModel;
 import com.loopers.domain.user.UserId;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +27,11 @@ public class LikeFacade {
 
    @Transactional
    public void toggleLike(UserId userId, Long productId) {
-      UserModel user = userService.getUser(userId);
+      User user = userService.getUser(userId);
       if (user == null) {
          throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
       }
-      ProductModel product = productService.getProduct(productId);
+      Product product = productService.getProduct(productId);
       if (product == null) {
          throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다.");
       }
@@ -40,11 +40,11 @@ public class LikeFacade {
 
    @Transactional
    public void addLike(UserId userId, Long productId) {
-      UserModel user = userService.getUser(userId);
+      User user = userService.getUser(userId);
       if (user == null) {
          throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
       }
-      ProductModel product = productService.getProduct(productId);
+      Product product = productService.getProduct(productId);
       if (product == null) {
          throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다.");
       }
@@ -53,11 +53,11 @@ public class LikeFacade {
 
    @Transactional
    public void removeLike(UserId userId, Long productId) {
-      UserModel user = userService.getUser(userId);
+      User user = userService.getUser(userId);
       if (user == null) {
          throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
       }
-      ProductModel product = productService.getProduct(productId);
+      Product product = productService.getProduct(productId);
       if (product == null) {
          throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다.");
       }
@@ -66,27 +66,27 @@ public class LikeFacade {
 
    @Transactional(readOnly = true)
    public boolean isLiked(UserId userId, Long productId) {
-      UserModel user = userService.getUser(userId);
-      ProductModel product = productService.getProduct(productId);
+      User user = userService.getUser(userId);
+      Product product = productService.getProduct(productId);
       return likeService.isLiked(user, product);
    }
 
    @Transactional(readOnly = true)
-   public List<ProductModel> getLikedProducts(UserId userId) {
-      UserModel user = userService.getUser(userId);
+   public List<Product> getLikedProducts(UserId userId) {
+      User user = userService.getUser(userId);
       return likeService.getLikedProducts(user);
    }  
 
    @Transactional(readOnly = true)
    public long getLikeCount(Long productId) {
-      ProductModel product = productService.getProduct(productId);
+      Product product = productService.getProduct(productId);
       return likeService.getLikeCount(product);
    }
 
    @Transactional(readOnly = true)
    public Map<Long, Long> getLikeCounts(List<Long> productIds) {
        
-       List<ProductModel> products = productService.getProductsByIds(productIds);
+       List<Product> products = productService.getProductsByIds(productIds);
 
        return likeService.getLikeCounts(products);
    }

@@ -1,15 +1,11 @@
 package com.loopers.domain.order;
 
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.user.UserId;
-import com.loopers.domain.user.Email;
-import com.loopers.domain.user.Gender;
-import com.loopers.domain.user.BirthDate;
-import com.loopers.domain.product.ProductModel;
-import com.loopers.domain.product.Brand;
+import com.loopers.domain.point.Point;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.user.*;
+import com.loopers.domain.user.User;
 import com.loopers.domain.common.Money;
 import com.loopers.domain.common.Quantity;
-import com.loopers.domain.point.PointModel;
 import com.loopers.infrastructure.order.OrderJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
@@ -63,17 +59,17 @@ class OrderServiceIntegrationTest {
         @Test
         void createsOrder_whenValidOrderRequest() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
             pointJpaRepository.save(
-                new PointModel(user, new Money(50000))
+                new Point(user, new Money(50000))
             );
-            ProductModel product1 = productJpaRepository.save(
-                new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10))
+            Product product1 = productJpaRepository.save(
+                new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10))
             );
-            ProductModel product2 = productJpaRepository.save(
-                new ProductModel("product2", new Brand("Samsung"), new Money(20000), new Quantity(5))
+            Product product2 = productJpaRepository.save(
+                new Product("product2", new Brand("Samsung"), new Money(20000), new Quantity(5))
             );
 
             List<OrderService.OrderItemRequest> items = List.of(
@@ -82,7 +78,7 @@ class OrderServiceIntegrationTest {
             );
 
             // act
-            OrderModel order = orderService.createOrder(user, items);
+            Order order = orderService.createOrder(user, items);
 
             // assert
             assertAll(
@@ -101,14 +97,14 @@ class OrderServiceIntegrationTest {
         @Test
         void throwsException_whenInsufficientStock() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
             pointJpaRepository.save(
-                new PointModel(user, new Money(50000))
+                new Point(user, new Money(50000))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(5))
+            Product product = productJpaRepository.save(
+                new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(5))
             );
 
             List<OrderService.OrderItemRequest> items = List.of(
@@ -129,14 +125,14 @@ class OrderServiceIntegrationTest {
         @Test
         void throwsException_whenInsufficientPoints() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
             pointJpaRepository.save(
-                new PointModel(user, new Money(10000)) // 부족한 포인트
+                new Point(user, new Money(10000)) // 부족한 포인트
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product1", new Brand("Apple"), new Money(20000), new Quantity(10))
+            Product product = productJpaRepository.save(
+                new Product("product1", new Brand("Apple"), new Money(20000), new Quantity(10))
             );
 
             List<OrderService.OrderItemRequest> items = List.of(
@@ -157,11 +153,11 @@ class OrderServiceIntegrationTest {
         @Test
         void throwsException_whenProductNotFound() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
             pointJpaRepository.save(
-                new PointModel(user, new Money(50000))
+                new Point(user, new Money(50000))
             );
 
             List<OrderService.OrderItemRequest> items = List.of(
@@ -182,14 +178,14 @@ class OrderServiceIntegrationTest {
         @Test
         void decreasesStock_whenOrderIsCreated() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
             pointJpaRepository.save(
-                new PointModel(user, new Money(50000))
+                new Point(user, new Money(50000))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10))
+            Product product = productJpaRepository.save(
+                new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10))
             );
             int initialQuantity = product.getQuantity().quantity();
 
@@ -201,7 +197,7 @@ class OrderServiceIntegrationTest {
             orderService.createOrder(user, items);
 
             // assert
-            ProductModel updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
+            Product updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
             assertThat(updatedProduct.getQuantity().quantity()).isEqualTo(initialQuantity - 3);
         }
 
@@ -209,14 +205,14 @@ class OrderServiceIntegrationTest {
         @Test
         void decreasesPoints_whenOrderIsCreated() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            PointModel point = pointJpaRepository.save(
-                new PointModel(user, new Money(50000))
+            Point point = pointJpaRepository.save(
+                new Point(user, new Money(50000))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product1", new Brand("Apple"), new Money(10000), new Quantity(10))
+            Product product = productJpaRepository.save(
+                new Product("product1", new Brand("Apple"), new Money(10000), new Quantity(10))
             );
             long initialPoints = point.getPoint().value();
 
@@ -228,7 +224,7 @@ class OrderServiceIntegrationTest {
             orderService.createOrder(user, items);
 
             // assert
-            PointModel updatedPoint = pointJpaRepository.findByUser(user).orElseThrow();
+            Point updatedPoint = pointJpaRepository.findByUser(user).orElseThrow();
             assertThat(updatedPoint.getPoint().value()).isEqualTo(initialPoints - 20000);
         }
     }

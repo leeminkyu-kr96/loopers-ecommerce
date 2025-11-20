@@ -1,8 +1,8 @@
 package com.loopers.infrastructure.like;
 
-import com.loopers.domain.like.LikeModel;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.product.ProductModel;
+import com.loopers.domain.like.Like;
+import com.loopers.domain.user.User;
+import com.loopers.domain.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,13 +12,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public interface LikeJpaRepository extends JpaRepository<LikeModel, Long> {
+public interface LikeJpaRepository extends JpaRepository<Like, Long> {
 
-    Optional<LikeModel> findByUserAndProduct(UserModel user, ProductModel product);
+    Optional<Like> findByUserAndProduct(User user, Product product);
 
-    List<LikeModel> findByUser(UserModel user);
+    List<Like> findByUser(User user);
 
-    long countByProduct(ProductModel product);
+    long countByProduct(Product product);
 
     @Query("SELECT l.product.id as productId, COUNT(l) as likeCount " +
            "FROM LikeModel l " +

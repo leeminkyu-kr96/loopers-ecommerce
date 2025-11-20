@@ -1,42 +1,37 @@
 package com.loopers.domain.like;
 
 import com.loopers.domain.BaseEntity;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.product.ProductModel;
+import com.loopers.domain.user.User;
+import com.loopers.domain.product.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(
     name = "like",
     uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"})
 )
-public class LikeModel extends BaseEntity {
+public class Like extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserModel user;
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ProductModel product;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public LikeModel() {
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    public Like() {
     }
 
-    public LikeModel(UserModel user, ProductModel product) {
+    public Like(User user, Product product) {
         this.user = user;
         this.product = product;
-    }
-
-    public UserModel getUser() {
-        return user;
-    }
-
-    public ProductModel getProduct() {
-        return product;
     }
 
 }

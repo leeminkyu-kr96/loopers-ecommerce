@@ -9,16 +9,16 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductRepository {
     // 상품 목록 조회(다건)
-    Page<ProductModel> findAll(Pageable pageable);
-
-    // 브랜드로 상품 목록 조회(다건)
-    Page<ProductModel> findByBrandName(String brandName, Pageable pageable);
+    Page<Product> findAll(Pageable pageable, String sort);
 
     // 상품 상세 조회(단건)
-    Optional<ProductModel> findById(Long id);
+    Optional<Product> findById(Long id);
+
+    // 브랜드로 상품 목록 조회(다건)
+    Page<Product> findByBrandName(String brandName, Pageable pageable, String sort);
 
     // 상품 ID 목록으로 조회
-    List<ProductModel> findAllById(Set<Long> ids);
+    List<Product> findAllById(Set<Long> ids);
 
 }
 

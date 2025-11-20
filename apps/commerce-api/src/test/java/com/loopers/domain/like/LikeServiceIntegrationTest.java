@@ -1,14 +1,10 @@
 package com.loopers.domain.like;
 
-import com.loopers.domain.product.ProductModel;
-import com.loopers.domain.product.Brand;
+import com.loopers.domain.product.Product;
 import com.loopers.domain.common.Money;
 import com.loopers.domain.common.Quantity;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.user.UserId;
-import com.loopers.domain.user.Email;
-import com.loopers.domain.user.Gender;
-import com.loopers.domain.user.BirthDate;
+import com.loopers.domain.user.*;
+import com.loopers.domain.user.User;
 import com.loopers.infrastructure.like.LikeJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
@@ -53,11 +49,11 @@ class LikeServiceIntegrationTest {
         @Test
         void createsLike_whenAddLikeIsCalled() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
+            Product product = productJpaRepository.save(
+                new Product("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
             );
 
             // act
@@ -72,11 +68,11 @@ class LikeServiceIntegrationTest {
         @Test
         void removesLike_whenRemoveLikeIsCalled() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
+            Product product = productJpaRepository.save(
+                new Product("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
             );
             likeService.addLike(user, product);
 
@@ -92,11 +88,11 @@ class LikeServiceIntegrationTest {
         @Test
         void cancelsLike_whenAddLikeIsCalledOnLikedProduct() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
+            Product product = productJpaRepository.save(
+                new Product("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
             );
             likeService.addLike(user, product); // 첫 번째 호출: 좋아요 추가
             assertThat(likeService.isLiked(user, product)).isTrue();
@@ -112,11 +108,11 @@ class LikeServiceIntegrationTest {
         @Test
         void addsLike_whenRemoveLikeIsCalledOnUnlikedProduct() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
+            Product product = productJpaRepository.save(
+                new Product("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
             );
             // 처음부터 좋아요 없음
             assertThat(likeService.isLiked(user, product)).isFalse();
@@ -132,11 +128,11 @@ class LikeServiceIntegrationTest {
         @Test
         void togglesLike_whenToggleLikeIsCalled() {
             // arrange
-            UserModel user = userJpaRepository.save(
-                new UserModel(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user = userJpaRepository.save(
+                new User(new UserId("user123"), new Email("user123@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
+            Product product = productJpaRepository.save(
+                new Product("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
             );
 
             // act & assert - 첫 번째 호출: 좋아요 등록
@@ -157,14 +153,14 @@ class LikeServiceIntegrationTest {
         @Test
         void returnsCorrectLikeCount_whenMultipleUsersLikeProduct() {
             // arrange
-            UserModel user1 = userJpaRepository.save(
-                new UserModel(new UserId("user1"), new Email("user1@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
+            User user1 = userJpaRepository.save(
+                new User(new UserId("user1"), new Email("user1@user.com"), new Gender("male"), new BirthDate("1999-01-01"))
             );
-            UserModel user2 = userJpaRepository.save(
-                new UserModel(new UserId("user2"), new Email("user2@user.com"), new Gender("female"), new BirthDate("2000-01-01"))
+            User user2 = userJpaRepository.save(
+                new User(new UserId("user2"), new Email("user2@user.com"), new Gender("female"), new BirthDate("2000-01-01"))
             );
-            ProductModel product = productJpaRepository.save(
-                new ProductModel("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
+            Product product = productJpaRepository.save(
+                new Product("product123", new Brand("Apple"), new Money(10000), new Quantity(100))
             );
             likeService.addLike(user1, product);
             likeService.addLike(user2, product);

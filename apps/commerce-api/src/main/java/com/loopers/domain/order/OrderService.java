@@ -1,7 +1,7 @@
 package com.loopers.domain.order;
 
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.product.ProductModel;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.user.User;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.common.Money;
@@ -24,23 +24,23 @@ public class OrderService {
     private final PointService pointService;
 
     @Transactional(readOnly = true)
-    public OrderModel getOrder(Long id) {
+    public Order getOrder(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
 
     @Transactional(readOnly = true) 
-    public List<OrderModel> getUserOrders(UserModel user) {
+    public List<Order> getUserOrders(User user) {
         return orderRepository.findByUserId(user);
     }
 
     @Transactional
-    public OrderModel createOrder(UserModel user, List<OrderItemRequest> items) {
+    public Order createOrder(User user, List<OrderItemRequest> items) {
 
         if (items == null || items.isEmpty()) {
             throw new CoreException(ErrorType.BAD_REQUEST, "주문 항목이 비어있습니다.");
         }
 
-        List<OrderItemModel> orderItems = new ArrayList<>();
+        List<OrderItem> orderItems = new ArrayList<>();
         long totalPriceValue = 0;
 
         // 각 상품에 대해 재고 확인 및 차감, 주문 항목 생성
@@ -49,7 +49,7 @@ public class OrderService {
                 throw new CoreException(ErrorType.BAD_REQUEST, "주문 수량은 1개 이상이어야 합니다.");
             }
             
-            ProductModel product = productService.getProduct(item.productId());
+            Product product = productService.getProduct(item.productId());
             if (product == null) {
                 throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다. productId: " + item.productId());
             }
@@ -64,7 +64,7 @@ public class OrderService {
             totalPriceValue += orderPrice.value();
             
             // 주문 항목 생성
-            OrderItemModel orderItem = new OrderItemModel(product, quantity, orderPrice);
+            OrderItem orderItem = new OrderItem(product, quantity, orderPrice);
             orderItems.add(orderItem);
         }
 
@@ -74,7 +74,7 @@ public class OrderService {
         pointService.use(user, totalPrice);
         
         // 주문 생성 및 저장
-        OrderModel order = new OrderModel(user, totalPrice, orderItems);
+        Order order = new Order(user, totalPrice, orderItems);
         return orderRepository.save(order);
     }
 

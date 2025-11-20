@@ -1,5 +1,6 @@
 package com.loopers.application.product;
 
+import com.loopers.domain.product.Product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.springframework.data.domain.Page;
@@ -8,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.loopers.domain.product.ProductService;
-import com.loopers.domain.product.ProductModel;
 import com.loopers.domain.common.Quantity;
 
 @RequiredArgsConstructor
@@ -19,13 +19,13 @@ public class ProductFacade {
 
     // 상품 다건 조회 - 페이징 지원
     public Page<ProductInfo> getProducts(Pageable pageable, String sort, String brandName) {
-        Page<ProductModel> productPage = productService.getProducts(pageable, sort, brandName);
+        Page<Product> productPage = productService.getProducts(pageable, sort, brandName);
         return productPage.map(ProductInfo::from);
     }
 
     // 상품 단건 조회
     public ProductInfo getProduct(Long id){
-        ProductModel product = productService.getProduct(id);
+        Product product = productService.getProduct(id);
         if (product == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "상품이 존재하지 않습니다.");
         }

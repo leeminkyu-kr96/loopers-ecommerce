@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Component;
 
 
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 
@@ -19,8 +19,8 @@ public class PointService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public PointModel findPoint(PointModel point) {
-        UserModel requestUser = point.getUser();
+    public Point findPoint(Point point) {
+        User requestUser = point.getUser();
         var foundUser = userRepository.findById(requestUser.getId());
         if (foundUser.isEmpty()) {
             return null;
@@ -29,8 +29,8 @@ public class PointService {
     }
   
     @Transactional
-    public void charge(PointModel point) {
-        UserModel user = point.getUser();
+    public void charge(Point point) {
+        User user = point.getUser();
         var foundUser = userRepository.findById(user.getId())
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저가 존재하지 않습니다."));
   
@@ -40,11 +40,11 @@ public class PointService {
             pointRepository.save(existing.get());
             return;
         }
-        pointRepository.save(new PointModel(foundUser, point.getPoint()));
+        pointRepository.save(new Point(foundUser, point.getPoint()));
     }
 
     @Transactional
-    public void use(UserModel user, Money usePoint) {
+    public void use(User user, Money usePoint) {
         var foundUser = userRepository.findById(user.getId())
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저가 존재하지 않습니다."));
         

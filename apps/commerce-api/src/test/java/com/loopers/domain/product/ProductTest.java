@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ProductModelTest {
+class ProductTest {
     @DisplayName("상품 모델을 생성할 때, ")
     @Nested
     class Create {
@@ -33,7 +33,7 @@ class ProductModelTest {
         @Test
         void productModel_whenDecreaseQuantityIsLessThan0() {
             // arrange
-            ProductModel product = new ProductModel("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
             
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
@@ -49,7 +49,7 @@ class ProductModelTest {
         @Test
         void decreasesQuantity_whenValidQuantityIsProvided() {
             // arrange
-            ProductModel product = new ProductModel("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
             int initialQuantity = product.getQuantity().quantity();
             
             // act
@@ -63,7 +63,7 @@ class ProductModelTest {
         @Test
         void decreasesQuantityToZero_whenQuantityEqualsStock() {
             // arrange
-            ProductModel product = new ProductModel("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
             
             // act
             product.decreaseQuantity(new Quantity(10));
@@ -92,7 +92,7 @@ class ProductModelTest {
             
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new ProductModel(name, new Brand("Apple"), new Money(10000), new Quantity(10));
+                new Product(name, new Brand("Apple"), new Money(10000), new Quantity(10));
             });
 
             // assert

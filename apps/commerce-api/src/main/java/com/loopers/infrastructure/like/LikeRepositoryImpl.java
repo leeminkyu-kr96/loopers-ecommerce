@@ -1,9 +1,9 @@
 package com.loopers.infrastructure.like;
 
-import com.loopers.domain.like.LikeModel;
+import com.loopers.domain.like.Like;
 import com.loopers.domain.like.LikeRepository;
-import com.loopers.domain.user.UserModel;
-import com.loopers.domain.product.ProductModel;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,21 +21,21 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     // 좋아요 여부 조회
     @Override
-    public Optional<LikeModel> findByUserAndProduct(UserModel user, ProductModel product) {
+    public Optional<Like> findByUserAndProduct(User user, Product product) {
         return likeJpaRepository.findByUserAndProduct(user, product);
     }
 
     // 사용자가 좋아요한 상품 목록 조회
     @Override
-    public List<ProductModel> findLikedProductsByUser(UserModel user) {
+    public List<Product> findLikedProductsByUser(User user) {
         return likeJpaRepository.findByUser(user).stream()
-                .map(LikeModel::getProduct)
+                .map(Like::getProduct)
                 .collect(Collectors.toList());
     }
 
     // 상품의 좋아요 수 조회
     @Override
-    public long countByProductLiked(ProductModel product) {
+    public long countByProductLiked(Product product) {
         return likeJpaRepository.countByProduct(product);
     }
 
@@ -47,13 +47,13 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     // 좋아요 등록
     @Override
-    public LikeModel save(LikeModel like) {
+    public Like save(Like like) {
         return likeJpaRepository.save(like);
     }
 
     // 좋아요 삭제
     @Override
-    public void delete(LikeModel like) {
+    public void delete(Like like) {
         likeJpaRepository.delete(like);
     }
 }

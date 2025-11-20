@@ -43,7 +43,7 @@ class ProductServiceIntegrationTest {
         @Test
         void productService_whenGetProductsIsNotFound() {
             // arrange
-            productJpaRepository.save(new ProductModel("제목", new Brand("Apple"), new Money(10000), new Quantity(10)));
+            productJpaRepository.save(new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10)));
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
