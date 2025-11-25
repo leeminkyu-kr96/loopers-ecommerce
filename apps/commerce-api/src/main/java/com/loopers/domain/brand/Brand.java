@@ -24,7 +24,7 @@ public class Brand extends BaseEntity {
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private List<Product> products = new ArrayList<>();
 
-    private Brand(String name) {
+    public Brand(String name) {
         validateName(name);
         this.name = name;
     }

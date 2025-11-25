@@ -1,5 +1,6 @@
 package com.loopers.domain.product;
 
+import com.loopers.domain.brand.Brand;
 import com.loopers.domain.common.Quantity;
 import com.loopers.domain.common.Money;
 import com.loopers.support.error.CoreException;
@@ -33,7 +34,7 @@ class ProductTest {
         @Test
         void productModel_whenDecreaseQuantityIsLessThan0() {
             // arrange
-            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10), 0L);
             
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
@@ -49,7 +50,7 @@ class ProductTest {
         @Test
         void decreasesQuantity_whenValidQuantityIsProvided() {
             // arrange
-            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10), 0L);
             int initialQuantity = product.getQuantity().quantity();
             
             // act
@@ -63,7 +64,7 @@ class ProductTest {
         @Test
         void decreasesQuantityToZero_whenQuantityEqualsStock() {
             // arrange
-            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10));
+            Product product = new Product("제목", new Brand("Apple"), new Money(10000), new Quantity(10), 0L);
             
             // act
             product.decreaseQuantity(new Quantity(10));
@@ -92,13 +93,11 @@ class ProductTest {
             
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                new Product(name, new Brand("Apple"), new Money(10000), new Quantity(10));
+                new Product(name, new Brand("Apple"), new Money(10000), new Quantity(10), 0L);
             });
 
             // assert
             assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
-
-        
     }
 }

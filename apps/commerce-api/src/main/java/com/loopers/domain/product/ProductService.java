@@ -80,10 +80,19 @@ public class ProductService {
 
     @Transactional
     public void updateQuantity(Long id, Quantity quantityToDecrease) {
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithLock(id)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품이 존재하지 않습니다."));
 
         product.decreaseQuantity(quantityToDecrease);
+    }
+
+    @Transactional
+    public Product getProductWithLockAndDecreaseQuantity(Long id, Quantity quantityToDecrease) {
+        Product product = productRepository.findByIdWithLock(id)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품이 존재하지 않습니다."));
+
+        product.decreaseQuantity(quantityToDecrease);
+        return product;
     }
 
     @Transactional(readOnly = true)

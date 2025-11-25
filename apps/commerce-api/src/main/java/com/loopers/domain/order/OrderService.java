@@ -40,26 +40,29 @@ public class OrderService {
         }
 
         List<OrderItem> orderItems = requests.stream()
-                .map(this::createOrderItem)
+                .map(this::createOrderItemWithoutStockDecrease)
                 .collect(Collectors.toList());
 
         Order order = Order.create(user, orderItems);
 
         pointService.use(user, order.getTotalPrice());
 
+        orderItems.forEach(item -> 
+            productService.getProductWithLockAndDecreaseQuantity(
+                item.getProduct().getId(), 
+                item.getQuantity()
+            )
+        );
+
         return orderRepository.save(order);
     }
 
-    private OrderItem createOrderItem(OrderDto.CreateRequest request) {
+    private OrderItem createOrderItemWithoutStockDecrease(OrderDto.CreateRequest request) {
+        // 재고 차감 없이 Product만 조회하여 OrderItem 생성
         Product product = productService.getProduct(request.productId());
         if (product == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다. productId: " + request.productId());
         }
-
-        Quantity quantity = new Quantity(request.quantity());
-
-        productService.updateQuantity(product.getId(), quantity);
-
-        return OrderItem.create(product, quantity);
+        return OrderItem.create(product, new Quantity(request.quantity()));
     }
 }

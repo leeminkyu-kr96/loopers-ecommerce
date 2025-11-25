@@ -9,8 +9,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductRepository {
     Page<Product> findAll(Pageable pageable);
-    Optional<Product> findById(Long id);
-
+    
     Page<Product> findByBrandName(String brandName, Pageable pageable);
+
     List<Product> findAllById(Set<Long> ids);
+
+    Optional<Product> findByIdWithLock(Long id);
+
+    Optional<Product> findById(Long id);
 }
