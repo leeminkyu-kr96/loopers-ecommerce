@@ -1,9 +1,11 @@
-// apps/commerce-api/src/main/java/com/loopers/application/user/UserFacade.java
-
 package com.loopers.application.user;
 
-import com.loopers.domain.user.*;
 import com.loopers.domain.user.User;
+import com.loopers.domain.user.UserService;
+import com.loopers.domain.user.UserId;
+import com.loopers.domain.user.Email;
+import com.loopers.domain.user.Gender;
+import com.loopers.domain.user.BirthDate;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;

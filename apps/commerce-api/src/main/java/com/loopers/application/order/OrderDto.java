@@ -3,12 +3,16 @@ package com.loopers.application.order;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
 
+import java.util.List;
+
 public class OrderDto {
 
-    public record CreateRequest(
+    record CreateOrderItemRequest(
         @NotNull Long productId,
-        @Min(0) Integer quantity
+        @Min(1) Integer quantity
     ) {}
 
-
+    public record CreateRequest(
+        @NotNull List<CreateOrderItemRequest> items
+    ) {}
 }

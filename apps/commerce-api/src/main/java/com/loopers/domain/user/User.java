@@ -12,9 +12,11 @@ import lombok.Getter;
 public class User extends BaseEntity {
 
     @Embedded
+    @AttributeOverride(name = "userId", column = @Column(name = "user_id", nullable = false, unique = true, length = 10))
     private UserId userId;
 
     @Embedded
+    @AttributeOverride(name = "email", column = @Column(name = "email", nullable = false))
     private Email email;
 
     @Enumerated(EnumType.STRING)
@@ -22,6 +24,7 @@ public class User extends BaseEntity {
     private Gender gender;
 
     @Embedded
+    @AttributeOverride(name = "birthDate", column = @Column(name = "birth_date", nullable = false))
     private BirthDate birthDate;
 
     protected User() {

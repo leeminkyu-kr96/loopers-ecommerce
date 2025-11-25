@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.loopers.domain.like.LikeRepository;
 import com.loopers.domain.common.Quantity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -22,8 +21,6 @@ import com.loopers.support.error.ErrorType;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
-    private final LikeRepository likeRepository;
 
     @Transactional(readOnly = true)
     public Page<Product> getProducts(Pageable pageable, String sort, String brandName) {
@@ -65,10 +62,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Product getProduct(Long id) {
-        Product product = productRepository.findById(id)
+        return productRepository.findById(id)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품이 존재하지 않습니다."));
-        product.setLikeCount(likeRepository.countByProductLiked(product));
-        return product;
     }
 
     @Transactional(readOnly = true)

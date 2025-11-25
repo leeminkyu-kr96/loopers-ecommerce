@@ -1,11 +1,9 @@
 package com.loopers.domain.order;
 
-import com.loopers.application.order.OrderDto;
-import com.loopers.domain.product.Product;
 import com.loopers.domain.user.User;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.point.PointService;
-import com.loopers.domain.common.Quantity;
+import com.loopers.domain.common.Money;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -33,20 +30,22 @@ public class OrderService {
         return orderRepository.findByUserId(user);
     }
 
+    /**
+     * 주문을 생성합니다.
+     * 재고 차감, 포인트 차감은 이 메서드에서 처리됩니다.
+     * 
+     * @param user 주문 사용자
+     * @param orderItems 주문 항목 목록
+     * @param finalPrice 최종 결제 금액
+     * @return 생성된 주문
+     */
     @Transactional
-    public Order createOrder(User user, List<OrderDto.CreateRequest> requests) {
-        if (requests == null || requests.isEmpty()) {
+    public Order createOrder(User user, List<OrderItem> orderItems, Money finalPrice) {
+        if (orderItems == null || orderItems.isEmpty()) {
             throw new CoreException(ErrorType.BAD_REQUEST, "주문 항목이 비어있습니다.");
         }
 
-        List<OrderItem> orderItems = requests.stream()
-                .map(this::createOrderItemWithoutStockDecrease)
-                .collect(Collectors.toList());
-
-        Order order = Order.create(user, orderItems);
-
-        pointService.use(user, order.getTotalPrice());
-
+        // 재고 차감 (락을 사용하여 동시성 제어)
         orderItems.forEach(item -> 
             productService.getProductWithLockAndDecreaseQuantity(
                 item.getProduct().getId(), 
@@ -54,15 +53,12 @@ public class OrderService {
             )
         );
 
-        return orderRepository.save(order);
-    }
+        // 포인트 차감
+        pointService.use(user, finalPrice);
 
-    private OrderItem createOrderItemWithoutStockDecrease(OrderDto.CreateRequest request) {
-        // 재고 차감 없이 Product만 조회하여 OrderItem 생성
-        Product product = productService.getProduct(request.productId());
-        if (product == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다. productId: " + request.productId());
-        }
-        return OrderItem.create(product, new Quantity(request.quantity()));
+        // 주문 생성 (최종 금액으로 설정)
+        Order order = Order.createWithPrice(user, orderItems, finalPrice);
+
+        return orderRepository.save(order);
     }
 }

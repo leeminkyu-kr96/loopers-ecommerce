@@ -45,6 +45,15 @@ public class Order extends BaseEntity {
         return new Order(user, orderItems);
     }
 
+    public static Order createWithPrice(User user, List<OrderItem> orderItems, Money finalPrice) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "주문 항목은 필수입니다.");
+        }
+        Order order = new Order(user, orderItems);
+        order.totalPrice = finalPrice;
+        return order;
+    }
+
     private void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         orderItem.setOrder(this);

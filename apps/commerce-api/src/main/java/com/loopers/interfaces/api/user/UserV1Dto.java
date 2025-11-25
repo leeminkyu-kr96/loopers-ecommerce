@@ -4,12 +4,13 @@ import com.loopers.application.user.UserInfo;
 import jakarta.validation.constraints.NotBlank;
 
 public class UserV1Dto {
-    public record UserResponse(String userId, String email, String birthDate) {
+    public record UserResponse(String userId, String email, String birthDate, String gender) {
         public static UserResponse from(UserInfo info) {
             return new UserResponse(
                 info.userId(),
                 info.email(),
-                info.birthDate()
+                info.birthDate(),
+                info.gender()
             );
         }
     }
