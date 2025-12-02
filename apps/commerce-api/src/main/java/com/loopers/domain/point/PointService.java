@@ -30,18 +30,18 @@ public class PointService {
     public Point charge(UserId userId, Money amount) {
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
-  
-        Point point = pointRepository.findByUser(user)
+      
+        Point point = pointRepository.findByUserWithLock(user)
                 .orElseGet(() -> pointRepository.save(Point.create(user)));
-
+    
         point.charge(amount);
         
         return point;
     }
-
+    
     @Transactional
     public void use(User user, Money amount) {
-        Point point = pointRepository.findByUser(user)
+        Point point = pointRepository.findByUserWithLock(user)
             .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, "포인트 계좌가 존재하지 않습니다."));
         
         point.use(amount);

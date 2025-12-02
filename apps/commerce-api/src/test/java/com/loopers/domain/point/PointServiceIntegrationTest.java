@@ -1,7 +1,11 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.*;
 import com.loopers.domain.user.User;
+import com.loopers.domain.user.UserId;
+import com.loopers.domain.user.Email;
+import com.loopers.domain.user.Gender;
+import com.loopers.domain.user.BirthDate;
+import com.loopers.domain.user.UserRepository;
 import com.loopers.domain.common.Money;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.support.error.CoreException;
@@ -13,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -47,18 +53,17 @@ class PointServiceIntegrationTest {
         @Test
         void returnsPoint_whenValidUserIdIsProvided() {
             // arrange
-            User user = new User(new UserId("userId"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
+            User user = new User(new UserId("userId"), new Email("email@email.com"), Gender.MALE, new BirthDate(LocalDate.of(1999, 1, 1)));
             userRepository.save(user);
-            Point point = new Point(user, new Money(10));
-            pointService.charge(point);
+            pointService.charge(user.getUserId(), new Money(10));
 
             // act
-            Point result = pointService.findPoint(point);
+            Point result = pointService.getPoint(user.getUserId());
 
             // assert
             assertAll(
                 () -> assertThat(result).isNotNull(),
-                () -> assertThat(result.getPoint().value()).isEqualTo(10)
+                () -> assertThat(result.getBalance().value()).isEqualTo(10)
             );
         }
 
@@ -66,15 +71,15 @@ class PointServiceIntegrationTest {
         @Test
         void returnsNull_whenInvalidUserIdIsProvided() {
             // arrange
-            User user = new User(new UserId("notUserId1"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
-            Point point = new Point(user, new Money(10));
+            User user = new User(new UserId("notUserId1"), new Email("email@email.com"), Gender.MALE, new BirthDate(LocalDate.of(1999, 1, 1)));
 
             // act
-            Point result = pointService.findPoint(point);
+            Point result = pointService.getPoint(user.getUserId());
 
             // assert
             assertAll(
-                () -> assertThat(result).isNull()
+                () -> assertThat(result).isNull(),
+                () -> assertThat(result.getBalance()).isNull()
             );
         }
 
@@ -87,11 +92,10 @@ class PointServiceIntegrationTest {
         @Test
         void throwsException_whenInvalidUserIdIsProvided() {
             // arrange
-            User user = new User(new UserId("notUserId1"), new Email("email@email.com"), new Gender("male"), new BirthDate("1999-01-01"));
-            Point point = new Point(user, new Money(10));
+            User user = new User(new UserId("notUserId1"), new Email("email@email.com"), Gender.MALE, new BirthDate(LocalDate.of(1999, 1, 1)));
 
             // assert
-            assertThrows(CoreException.class, () -> pointService.charge(point));
+            assertThrows(CoreException.class, () -> pointService.charge(user.getUserId(), new Money(10)));
         }
 
     }
